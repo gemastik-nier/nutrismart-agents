@@ -93,4 +93,4 @@ The agents are designed to be used through the main coordinator. The typical flo
 3. Specialist processes the query using web search and its specialized knowledge
 4. Response is returned to the user
 
-For example usage, see the main `app/agent.py` file. 
+For example usage, see the main `app/nutrisionist_agent/agent.py` file. 
