@@ -1,96 +1,45 @@
-# NutriAgent Multi-Agent System
+# NutriAgent: Coordinator with 3 Specialized Agents
 
-This directory contains the specialized agents that make up the NutriAgent multi-agent system. The system uses Google's Agent Development Kit (ADK) to create a coordinated network of specialized agents that work together to provide comprehensive nutrition information.
+This project implements a coordinator–specialist multi‑agent system using Google's Agent Development Kit (ADK). The coordinator routes user queries to one of three specialized agents.
 
 ## System Architecture
 
-The NutriAgent system uses a coordinator-specialist pattern:
-
-1. **Coordinator Agent**: Routes user queries to the appropriate specialized agent
-2. **Specialized Agents**: Handle specific types of nutrition-related queries
+1. **Coordinator Agent**: Central router analyzing the user's query.
+2. **Specialized Agents (3 total)**:
+   - **Research AI Agent**: Web research and latest nutrition facts.
+   - **Nutritionist RAG Agent**: Grounded guidance using curated knowledge sources.
+   - **Personal AI Agent**: User‑specific data via backend APIs.
 
 ```
-                           ┌─────────────────────┐
-                           │                     │
-                           │  Coordinator Agent  │
-                           │                     │
-                           └──────────┬──────────┘
-                                      │
-                                      │ (routes to)
-                                      ▼
-┌──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
-│              │              │              │              │              │              │
-│  Nutrition   │   Calorie    │    Food      │    Diet      │ Measurement  │   Health     │
-│    Info      │  Calculator  │Recommendation│   Analysis   │ Conversion   │    Info      │
-│    Agent     │    Agent     │    Agent     │    Agent     │    Agent     │  Workflow    │
-│              │              │              │              │              │              │
-└──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
+                 ┌─────────────────────┐
+                 │  Coordinator Agent  │
+                 └──────────┬──────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+  Research Agent     Nutritionist RAG     Personal Agent
 ```
 
-## Agent Schema
+## Coordinator and Agents
 
-The NutriAgent system implements a sophisticated multi-agent architecture centered around the NutriAgentCoordinator. This coordinator acts as the central hub that intelligently routes user queries to specialized agents based on the query content and intent.
+- `app/agents/coordinator_agent.py`: Coordinator wired to exactly three sub‑agents.
+- `app/agents/research_agent.py`: Retrieves up‑to‑date nutrition information from the web.
+- `app/agents/nutritionist_rag_agent.py`: Provides grounded nutritional guidance using local/curated knowledge.
+- `app/agents/personal_agent.py`: Handles user‑specific context and personalization via backend APIs.
 
-Each specialized agent has access to the google_search tool, enabling them to retrieve real-time nutrition information from the web. This ensures that responses are based on the most current and accurate data available.
-
-The Health Information Workflow represents a sequential process where three specialized agents work in sequence: the HealthResearcherAgent gathers information, the HealthEditorAgent structures and improves the content, and the HealthFactCheckerAgent verifies accuracy and adds appropriate disclaimers.
-
-![Agent Schema](images/agent-schema.png)
-
-## Agents Overview
-
-### Coordinator Agent (`coordinator_agent.py`)
-
-The main entry point that analyzes user queries and routes them to the appropriate specialized agent.
-
-### Nutrition Information Agent (`nutrition_info_agent.py`)
-
-Provides detailed nutritional information about specific foods using web search to find the most current and accurate data.
-
-### Calorie Calculator Agent (`calorie_calculator_agent.py`)
-
-Calculates total calories and macronutrients for meals and recipes by looking up nutritional data for each component and performing the calculations.
-
-### Food Recommendation Agent (`food_recommendation_agent.py`)
-
-Recommends foods based on dietary preferences, health goals, and restrictions, providing personalized suggestions with explanations.
-
-### Diet Analysis Agent (`diet_analysis_agent.py`)
-
-Analyzes food logs or meal descriptions and provides constructive feedback on nutritional balance and potential improvements.
-
-### Measurement Conversion Agent (`measurement_conversion_agent.py`)
-
-Converts food measurements between different units, accounting for the specific properties of different foods.
-
-### Health Information Workflow (`health_info_agent.py`)
-
-A sequential workflow of agents that:
-1. Researches nutrition-related health conditions (Health Researcher Agent)
-2. Improves and structures the content (Health Editor Agent)
-3. Verifies the information for accuracy and adds disclaimers (Health Fact Checker Agent)
-
-## Agent Types Used
-
-The system demonstrates several ADK agent patterns:
-
-1. **LLM Agents**: All specialized agents use the `LlmAgent` class for natural language understanding and generation.
-
-2. **Sequential Agent**: The Health Information Workflow uses a `SequentialAgent` to coordinate a multi-step process of research, editing, and fact-checking.
-
-3. **Multi-Agent System**: The overall system is a multi-agent system with the coordinator routing to specialists.
-
-## Tools Used
-
-All agents use the `GoogleSearchTool` to access real-time information instead of relying on static data, enabling them to provide the most current and accurate nutrition information.
+Note: Additional agent files exist in `app/agents/` from an earlier, broader schema, but the coordinator currently delegates only to the three agents above.
 
 ## Usage
 
-The agents are designed to be used through the main coordinator. The typical flow is:
+Interact with the system via the coordinator defined in `app/agents/coordinator_agent.py`.
 
-1. User sends a query to the system
-2. Coordinator analyzes the query and routes to the appropriate specialist
-3. Specialist processes the query using web search and its specialized knowledge
-4. Response is returned to the user
+Typical flow:
+1. User sends a query.
+2. Coordinator selects the most appropriate specialist based on routing rules.
+3. Selected specialist handles the request and returns the response.
 
-For example usage, see the main `app/nutrisionist_agent/agent.py` file. 
+For an alternate entry point with the same three‑agent wiring, see `app/nutrisionist_agent/agent.py`.
+
+## Tools
+
+Agents may use search and local knowledge sources as configured in their implementations (e.g., web search for the Research agent, RAG for the Nutritionist agent).
