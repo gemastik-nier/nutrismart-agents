@@ -275,22 +275,29 @@ from tools import (
     food_recommendation_tool,
     diet_analysis_tool,
     measurement_conversion_tool,
-    health_condition_info_tool
+    health_condition_info_tool,
+    latest_nutrition_facts_tool,
+    user_profile_tool,
+    user_calorie_history_tool,
+    local_rag_tool,
 )
 
-# Create the agent with the tools
+# Example: building a custom agent with new tools
 nutritionist_agent = Agent(
-    model="gemini-2.0-flash",  # Or your preferred model
+    model="gemini-2.0-flash",
     name="NutriAgent",
-    instruction="""You are a helpful nutritionist assistant that provides information 
-    about nutrition, diet, and health. Use the available tools to answer user questions.""",
+    instruction="Use available tools to answer nutrition questions.",
     tools=[
         nutrition_info_tool,
         calorie_calculator_tool,
         food_recommendation_tool,
         diet_analysis_tool,
         measurement_conversion_tool,
-        health_condition_info_tool
+        health_condition_info_tool,
+        latest_nutrition_facts_tool,
+        user_profile_tool,
+        user_calorie_history_tool,
+        local_rag_tool,
     ]
 )
 ```

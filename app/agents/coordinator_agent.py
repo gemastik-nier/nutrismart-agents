@@ -1,51 +1,30 @@
-# from google.adk.agents import LlmAgent
-# from .nutrition_info_agent import nutrition_info_agent
-# from .calorie_calculator_agent import calorie_calculator_agent
-# from .food_recommendation_agent import food_recommendation_agent
-# from .diet_analysis_agent import diet_analysis_agent
-# from .measurement_conversion_agent import measurement_conversion_agent
-# from .health_info_agent import health_info_workflow
-# from config import MODEL_ID
+from google.adk.agents import Agent
+from config import MODEL_ID
+from agents.research_agent import research_agent
+from agents.nutritionist_rag_agent import nutritionist_rag_agent
+from agents.personal_agent import personal_agent
 
-# # This will be imported after all agents are created
-# # We'll update this file later to include all sub-agents
+# Coordinator that delegates to 3 specialized agents per new schema
+root_agent = Agent(
+    model=MODEL_ID,
+    name="NutriAgentCoordinator",
+    description="Coordinator that delegates to Research, Nutritionist (RAG), and Personal agents",
+    instruction="""
+You coordinate three specialists:
+1) Research AI Agent — for web research and latest nutrition facts
+2) Nutritionist AI Agent (RAG) — for grounded guidance using our curated knowledge sources
+3) Personal AI Agent — for user-specific data via backend APIs
 
-# coordinator_agent = LlmAgent(
-#     model=MODEL_ID,
-#     name="NutriAgentCoordinator",
-#     description="Main nutritionist assistant coordinator that routes user requests to specialized agents",
-#     instruction="""You are the coordinator for NutriAgent, an AI-powered nutritionist assistant. 
-#     Your role is to analyze user queries and route them to the appropriate specialized agent.
-    
-#     CAPABILITIES:
-#     - Analyze user queries to determine the most appropriate specialized agent
-#     - Route queries to the correct agent based on the user's needs
-#     - Provide a seamless experience for the user
-    
-#     GUIDELINES FOR ROUTING:
-#     - For questions about nutritional content of specific foods → nutrition_info_agent
-#     - For calculating calories and macronutrients in meals → calorie_calculator_agent
-#     - For food recommendations based on preferences or health goals → food_recommendation_agent
-#     - For analyzing diet patterns and providing feedback → diet_analysis_agent
-#     - For converting food measurements between units → measurement_conversion_agent
-#     - For information about nutrition-related health conditions → health_info_workflow
-    
-#     HOW TO ROUTE:
-#     1. Carefully analyze the user's query
-#     2. Identify the most appropriate specialized agent based on the query intent
-#     3. Transfer to that agent using the transfer_to_agent function
-#     4. If a query spans multiple domains, choose the most central one to the user's main question
-    
-#     Remember that your goal is to ensure the user gets the most accurate and helpful information by routing to the right specialist.
-#     """,
-#     sub_agents=[
-#         nutrition_info_agent,
-#         calorie_calculator_agent,
-#         food_recommendation_agent,
-#         diet_analysis_agent,
-#         measurement_conversion_agent,
-#         health_info_workflow
-#     ]
-# )
+ROUTING RULES:
+- If the task needs web search or latest nutrition facts → ResearchAIAgent
+- If the task needs domain guidance, explanations, or knowledge-base grounding → NutritionistRAGAgent
+- If the task needs user data (profile, history, personalization) → PersonalAIAgent
 
-# # This will be updated later after all agents are created to include sub-agents 
+Prefer a single handoff. If a query spans domains, choose the primary intent; mention any limitations.
+""",
+    sub_agents=[
+        research_agent,
+        nutritionist_rag_agent,
+        personal_agent,
+    ],
+)
